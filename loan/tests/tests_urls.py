@@ -15,10 +15,10 @@ class TestUrls(SimpleTestCase):
 
     def test_registercustomer_is_resolved(self):
         url = reverse("registercustomer", args=["f114c3f0-01c0-4739-8620-11a8b579d3b1"])
-        self.assertEquals(resolve(url).func.view_class, RegisterCustomerAPIView)    
+        self.assertEquals(resolve(url).func.view_class, RegisterCustomerAPIView)
 
     def test_registerpersonnel_is_resolved(self):
-        url = reverse("registerpersonnel", args=["afcd7507-8543-4a02-9a12-23d2a859795e"])
-        self.assertEquals(resolve(url).func.view_class, RegisterPersonnelAPIView) 
-
-    
+        url = reverse(
+            "registerpersonnel", args=["afcd7507-8543-4a02-9a12-23d2a859795e"]
+        )
+        self.assertEquals(resolve(url).func.view_class, RegisterPersonnelAPIView)

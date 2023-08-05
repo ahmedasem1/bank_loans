@@ -29,9 +29,7 @@ schema_view = swagger_get_schema_view(
     public=True,
 )
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('',include('loan.urls')),
-
+    path("admin/", admin.site.urls),
+    path("", include("loan.urls")),
     path("docs/", schema_view.with_ui("swagger", cache_timeout=0), name="swagger"),
-
 ]

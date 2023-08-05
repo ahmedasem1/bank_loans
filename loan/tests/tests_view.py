@@ -8,17 +8,14 @@ from rest_framework.views import APIView
 from loan.views import RegisterUserAPIView
 
 
-
-
-
 class CustomerAPIViewTests(APITestCase):
     customers_url = reverse("signup")
+
     def test_get_customers_is_resolved(self):
-        url = reverse('signup')
+        url = reverse("signup")
         self.assertEquals(resolve(url).func.view_class, RegisterUserAPIView)
         response = self.client.get(self.customers_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
 
     # def setUp(self):
     #     self.user = User.objects.create_user(
@@ -30,6 +27,7 @@ class CustomerAPIViewTests(APITestCase):
     # def test_get_customers_authenticated(self):
     #     response = self.client.get(self.customers_url)
     #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 #     def test_get_customers_un_authenticated(self):
 #         self.client.force_authenticate(user=None, token=None)

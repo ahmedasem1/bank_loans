@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('loan', '0002_user_uuid'),
+        ("loan", "0002_user_uuid"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='provider',
-            name='interest_rate',
+            model_name="provider",
+            name="interest_rate",
             field=models.IntegerField(null=True),
         ),
     ]

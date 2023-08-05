@@ -5,19 +5,22 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('loan', '0003_provider_interest_rate'),
+        ("loan", "0003_provider_interest_rate"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='bank_personnel',
-            name='Providers',
+            model_name="bank_personnel",
+            name="Providers",
         ),
         migrations.AddField(
-            model_name='provider',
-            name='bank_personnel',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='loan.bank_personnel'),
+            model_name="provider",
+            name="bank_personnel",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="loan.bank_personnel",
+            ),
         ),
     ]

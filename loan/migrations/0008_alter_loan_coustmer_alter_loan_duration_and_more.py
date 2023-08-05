@@ -5,51 +5,54 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('loan', '0007_remove_provider_interest_rate_and_more'),
+        ("loan", "0007_remove_provider_interest_rate_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='loan',
-            name='coustmer',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='loan.customer'),
+            model_name="loan",
+            name="coustmer",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="loan.customer",
+            ),
         ),
         migrations.AlterField(
-            model_name='loan',
-            name='duration',
+            model_name="loan",
+            name="duration",
             field=models.IntegerField(null=True),
         ),
         migrations.AlterField(
-            model_name='loan',
-            name='interest_rate',
+            model_name="loan",
+            name="interest_rate",
             field=models.IntegerField(),
         ),
         migrations.AlterField(
-            model_name='loan',
-            name='max_amount',
+            model_name="loan",
+            name="max_amount",
             field=models.IntegerField(default=2),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='loan',
-            name='max_duration',
+            model_name="loan",
+            name="max_duration",
             field=models.IntegerField(),
         ),
         migrations.AlterField(
-            model_name='loan',
-            name='min_amount',
+            model_name="loan",
+            name="min_amount",
             field=models.IntegerField(),
         ),
         migrations.AlterField(
-            model_name='loan',
-            name='start_date',
+            model_name="loan",
+            name="start_date",
             field=models.DateField(null=True),
         ),
         migrations.AlterField(
-            model_name='loan',
-            name='total_amount',
+            model_name="loan",
+            name="total_amount",
             field=models.IntegerField(null=True),
         ),
     ]

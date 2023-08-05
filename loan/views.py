@@ -72,7 +72,7 @@ def loan_Personeldetail(request, uuid):
 @api_view(['GET','DELETE'])
 def viewloanAPIView(request, uuid):
     """
-    Retrieve, update or delete a proudct.
+    get or delete a Loan.
     """
     try:
         user = User.objects.get(uuid=uuid)

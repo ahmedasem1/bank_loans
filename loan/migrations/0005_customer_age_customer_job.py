@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('loan', '0004_remove_bank_personnel_providers_and_more'),
+        ("loan", "0004_remove_bank_personnel_providers_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customer',
-            name='age',
+            model_name="customer",
+            name="age",
             field=models.IntegerField(max_length=100, null=True),
         ),
         migrations.AddField(
-            model_name='customer',
-            name='job',
+            model_name="customer",
+            name="job",
             field=models.CharField(max_length=100, null=True),
         ),
     ]

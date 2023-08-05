@@ -11,8 +11,11 @@ class IsPersonnelOrReadOnly(permissions.BasePermission):
     """
     Allows access only to Managers
     """
+
     def has_permission(self, request, view):
-        return request.user.profession == 'BP'
+        return request.user.profession == "BP"
+
+
 # class IsPersonnelOrReadOnly(permissions.BasePermission):
 #     """
 #     Object-level permission to only allow owners of an object to edit it.
@@ -26,4 +29,4 @@ class IsPersonnelOrReadOnly(permissions.BasePermission):
 #             return True
 
 #         # Instance must have an attribute named `owner`.
-#         return User.type=="BP"        
+#         return User.type=="BP"

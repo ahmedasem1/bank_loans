@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('loan', '0008_alter_loan_coustmer_alter_loan_duration_and_more'),
+        ("loan", "0008_alter_loan_coustmer_alter_loan_duration_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='loan',
-            name='status',
+            model_name="loan",
+            name="status",
             field=models.CharField(max_length=100, null=True),
         ),
     ]
