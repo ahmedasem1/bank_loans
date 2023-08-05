@@ -1,16 +1,18 @@
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import RegisterSerializer,RegisterProvider,RegisterPersonnel,RegisterCustomer,LoanDetail
-from loan.models import User,Loan,Bank_personnel
+from .serializers import RegisterSerializer,RegisterProvider,RegisterPersonnel,RegisterCustomer,LoanDetail,loansSerializer,loansCoustmerSerializer
+from loan.models import User,Loan,Bank_personnel,Provider,Customer
+from loan.permissions import IsPersonnelOrReadOnly
+
 from rest_framework.authentication import TokenAuthentication 
 from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework import status,mixins
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.contrib.auth import get_user_model
 
+from django.contrib.auth.decorators import  permission_required
 
 
 
@@ -53,62 +55,85 @@ class RegisterPersonnelAPIView(generics.CreateAPIView):
     # serializer.save(user)
 
     return user    
-  
-class loan_detail(generics.CreateAPIView):
-  permission_classes = (AllowAny,)
-  # lookup_field = "uuid"
-  serializer_class = LoanDetail
-  def post(self, request):
-        print("llllllllllllllllllllllllllll")
-        print(self.request.user)
-        user=User.objects.filter(uuid=self.user.uuid).first()
-        print("llllllllllllllllllllllllllll")
-        print(user)
-        user=Bank_personnel.filter(user=user).first()
-        
 
-        serializer = LoanDetail(data=request.data,context={'user': user})
+@api_view(['POST'])
+# @permission_required('loan.IsPersonnelOrReadOnly', raise_exception=True)
+def loan_Personeldetail(request, uuid):
+      user=User.objects.filter(uuid=uuid).first()
+      user=Bank_personnel.objects.get(user=user)     
+      if request.method == 'POST':
+
+        serializer = LoanDetail(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-        else:
-            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-  # def get_queryset(self,request, *args, **kwargs):
-  #   # try:
-  #   user = User.objects.filter(uuid=request.user.uuid).first()
-  #   print("opppppppppppppppppppppppp")
-  #   print(user)
-  #   LoanDetail(Loan,context={'user': user})
+@api_view(['GET','DELETE'])
+def viewloanAPIView(request, uuid):
+    """
+    Retrieve, update or delete a proudct.
+    """
+    try:
+        user = User.objects.get(uuid=uuid)
+        provider = Provider.objects.get(user=user)
 
-  #   # except user.DoesNotExist:
-  #   #   return Response(status=status.HTTP_404_NOT_FOUND)
-  #   return user    
-  # def create(self, request, *args, **kwargs):
-  #   serializer = self.get_serializer(data=request.data)
-  #   serializer.is_valid(raise_exception=True)
-  #   self.perform_create(serializer)
-  #   headers = self.get_success_headers(serializer.data)
-  #   return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        loans = Loan.objects.get(provider=provider)
+
+
+
+    except provider.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = loansSerializer(loans)
+        return Response(serializer.data)
     
+@api_view(['GET'])
+def viewCoustmerAPIView(request, uuid):
+    try:
+        coustmer=None
+        
+        user = User.objects.get(uuid=uuid)
+        print(user)
 
-# @api_view(['GET','POST'])
-# def loan_detail(request, acc_uuid):
-#     """
-#     Retrieve, update or delete a proudct.
-#     """
-#     try:
-#         user = User.objects.filter(uuid=request.user.uuid).first()
-#     except user.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
 
-#     if request.method == 'GET':
-#         serializer = LoanDetail(Loan)
-#         return Response(serializer.data)
+        coustmer = Customer.objects.get(user=user)
+        loans = Loan.objects.filter(coustmer=coustmer)
+    except coustmer.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        serializer = loansCoustmerSerializer(loans,many=True)
+        return Response(serializer.data)    
+    
+# class loan_Coustmedetail(mixins.UpdateModelMixin):
+#     queryset = Loan.objects.all()
+#     serializer_class = LoanCoustmer
+#     http_method_names=["patch"]
+@api_view(['GET','PATCH'])
+# @permission_required('loan.IsPersonnelOrReadOnly', raise_exception=True)
+def loan_Coustmedetail(request,id):
+        
+      
+      loans = Loan.objects.get(id=id)   
 
-#     elif request.method == 'POST':
-#         serializer = LoanDetail(Loan,context={'user': user})
-#         if serializer.is_valid(raise_exception=True):
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
+      if request.method == 'PATCH':
+        instance = loans
+        data = {
+            "start_date": request.POST.get('start_date'),
+            "total_amount": request.POST.get('total_amount'),
+            "duration": request.POST.get('duration'),
+
+            }
+        serializer = loansSerializer(instance=instance,data=request.data ,partial=True,context={'id': id})
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      if request.method == 'GET':
+
+        serializer = loansSerializer(loans)
+        return Response(serializer.data)
+      

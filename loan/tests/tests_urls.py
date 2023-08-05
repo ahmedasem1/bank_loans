@@ -1,6 +1,7 @@
-from django.test import SimpleTestCase
 from django.urls import resolve, reverse
 from loan.views import *
+from django.test import SimpleTestCase
+
 
 # testing weather the right url handeld by the right view function
 class TestUrls(SimpleTestCase):

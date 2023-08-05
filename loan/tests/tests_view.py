@@ -1,32 +1,86 @@
 from django.urls import path, reverse, include, resolve
 from django.test import SimpleTestCase
-from loan.views import *
 from rest_framework.test import APITestCase, APIClient
 from rest_framework.authtoken.models import Token
 from rest_framework import status
-from loan.models import User,Provider
-from django.test.runner import DiscoverRunner
-
+from loan.models import User
 from rest_framework.views import APIView
+from loan.views import RegisterUserAPIView
 
 
 
-# testing weather the object created or not
-class ApiUrlsTests(SimpleTestCase,DiscoverRunner):
-    
-    databases = '__all__'
-    url = reverse("signup")
 
-    def test_signup_is_resolved(self):
-        user = User.objects.create(
-        username='apsa1assp@gmail.com',
-            type='BP',     
-            password="Zaz16827"
-        )
-        user.set_password('Zaz16927')
-        user.save()
-        print('000000000000')
 
-        print(user)
-        self.assertEquals(user.username, "apsa1assp@gmail.com")   
-        
+class CustomerAPIViewTests(APITestCase):
+    customers_url = reverse("signup")
+    def test_get_customers_is_resolved(self):
+        url = reverse('signup')
+        self.assertEquals(resolve(url).func.view_class, RegisterUserAPIView)
+        response = self.client.get(self.customers_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+    # def setUp(self):
+    #     self.user = User.objects.create_user(
+    #         username='admin', password='admin' ,type="PR")
+    #     self.token = Token.objects.create(user=self.user)
+    #     #self.client = APIClient()
+    #     self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+
+    # def test_get_customers_authenticated(self):
+    #     response = self.client.get(self.customers_url)
+    #     self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+#     def test_get_customers_un_authenticated(self):
+#         self.client.force_authenticate(user=None, token=None)
+#         response = self.client.get(self.customers_url)
+#         self.assertEquals(response.status_code, 401)
+
+#     def test_post_customer_authenticated(self):
+#         data = {
+#             "title": "Mr",
+#             "name": "Peter",
+#             "last_name": "Parkerz",
+#             "gender": "M",
+#             "status": "published"
+#         }
+#         response = self.client.post(self.customers_url, data, format='json')
+#         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+#         self.assertEqual(len(response.data), 8)
+
+
+# class CustomerDetailAPIViewTests(APITestCase):
+#     customer_url = reverse('customer-detail', args=[1])
+#     customers_url = reverse("customer")
+
+#     def setUp(self):
+#         self.user = User.objects.create_user(
+#             username='admin', password='admin')
+#         self.token = Token.objects.create(user=self.user)
+#         #self.client = APIClient()
+#         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+
+#         # Saving customer
+#         data = {
+#             "title": "Mrs",
+#             "name": "Johnson",
+#             "last_name": "MOrisee",
+#             "gender": "F",
+#             "status": "published"
+#         }
+#         self.client.post(
+#             self.customers_url, data, format='json')
+
+#     def test_get_customer_autheticated(self):
+#         response = self.client.get(self.customer_url)
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(response.data['name'], 'Johnson')
+
+#     def test_get_customer_un_authenticated(self):
+#         self.client.force_authenticate(user=None, token=None)
+#         response = self.client.get(self.customer_url)
+#         self.assertEqual(response.status_code, 401)
+
+#     def test_delete_customer_authenticated(self):
+#         response = self.client.delete(self.customer_url)
+#         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

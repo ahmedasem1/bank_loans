@@ -1,9 +1,13 @@
 from rest_framework import serializers
-from loan.models import User,Provider,Bank_personnel,Customer,Loan 
+from loan.models import Provider,Bank_personnel,Customer,Loan,User 
 from rest_framework import status
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from django.shortcuts import render, redirect
+from django.contrib.auth import get_user_model
+User = get_user_model()
+# from django.utils.timezone import now
+# from rest_framework import serializers
 
 
 
@@ -86,10 +90,10 @@ class RegisterCustomer(serializers.ModelSerializer):
     fields = ('user','name','id','age','job')
 
 # create a Provider object
-    def get_queryset(self, *args, **kwargs):
-      user = User.objects.filter(uuid=self.kwargs["uuid"]).first()
+    # def get_queryset(self, *args, **kwargs):
+    #   user = User.objects.filter(uuid=self.kwargs["uuid"]).first()
     
-      return user  
+      # return user  
     def create(self,validated_data):
         customer = Customer.objects.create(
         user=validated_data['user'] ,
@@ -103,25 +107,67 @@ class RegisterCustomer(serializers.ModelSerializer):
         return customer        
     
 class LoanDetail(serializers.ModelSerializer):
-  # bank_personnel = serializers.PrimaryKeyRelatedField(queryset=User.objects.filter(uuid=request.user.uuid).first())
-
   class Meta:
     model=Loan
-    fields = ('min_amount','max_amount','max_duration','interest_rate')
-
-# create a Provider object
-    # def get_queryset(self, obj):
-    #     author = self.context["author"]
-    def create(self,validated_data,):
-        # print(self.context[''])
+    fields = ('min_amount','max_amount','max_duration','interest_rate','bank_personnel','provider','coustmer')
+    def create(self,validated_data):
         loan = Loan.objects.create(
-        bank_personnel=self.context['user'],
+        bank_personnel=validated_data['bank_personnel'],
+        provider=validated_data['provider'],
         min_amount=validated_data['min_amount'],
         max_amount=validated_data['max_amount'],     
         max_duration=validated_data['max_duration'],     
         interest_rate=validated_data['interest_rate'], 
+        coustmer=validated_data['coustmer'], 
+
         )
         loan.save()
-        
-        
         return loan            
+    
+class loansSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Loan
+        fields = "__all__"
+    def update(self, instance, validated_data):
+        instance.start_date = validated_data.get('start_date', instance.start_date)
+        instance.total_amount = validated_data.get('total_amount', instance.total_amount)
+        instance.duration = validated_data.get('duration', instance.duration)
+        instance.id = self.context['id']
+        print("000000000000")
+
+        print(instance.start_date)
+        instance.save()
+        return instance
+
+      
+class loansCoustmerSerializer(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField() 
+    class Meta:
+        model = Loan
+        fields = "__all__"
+    def get_status(self, obj):
+      max_amount = self.context.get("max_amount")
+
+      if max_amount is not None:
+        return obj.status=="Pending"
+      else:
+        return obj.status=="viewed"
+         
+# class LoanCoustmer(serializers.ModelSerializer):
+#   class Meta:
+#     model=Loan
+#     fields = ('min_amount','max_amount','max_duration','interest_rate','bank_personnel','provider','coustmer')
+#     def create(self,validated_data):
+#         loan = Loan.objects.create(
+#         bank_personnel=validated_data['bank_personnel'],
+#         provider=validated_data['provider'],
+#         min_amount=validated_data['min_amount'],
+#         max_amount=validated_data['max_amount'],     
+#         max_duration=validated_data['max_duration'],     
+#         interest_rate=validated_data['interest_rate'], 
+#         coustmer=validated_data['coustmer'], 
+
+#         )
+#         loan.save()
+#         return loan            
+             
