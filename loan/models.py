@@ -59,13 +59,6 @@ class Provider(models.Model):
         return f"{self.name}"
 
 
-class payment(models.Model):
-    amount = models.IntegerField()
-    date = models.DateField()
-    # sender=models.ForeignKey(User, on_delete=models.CASCADE)
-    # receiver=models.ForeignKey(User, on_delete=models.CASCADE)
-
-
 class Loan(models.Model):
     start_date = models.DateField(null=True, blank=True)
     total_amount = models.IntegerField(null=True, blank=True)
@@ -89,7 +82,6 @@ class Loan(models.Model):
     def clean(self):
         if self.max_amount < self.min_amount:
             raise ValidationError("min_amount fields bigger than max_amount")
-        # if self.provider.total_budget < self.max_amount:
         x = 0
 
         for e in self.provider.loan_set.all():
@@ -116,5 +108,8 @@ class Loan(models.Model):
         self.full_clean()
         super().save(*args, **kwargs)
 
-    # def get_discount(self):
-    #     return "122"
+
+class payment(models.Model):
+    amount = models.IntegerField()
+    date = models.DateField()
+    loan = models.ForeignKey(Loan, on_delete=models.CASCADE, null=True)

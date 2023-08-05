@@ -26,9 +26,24 @@ urlpatterns = [
         views.RegisterPersonnelAPIView.as_view(),
         name="registerpersonnel",
     ),
-    # path("personnelloan/<uuid:acc_uuid>/", views.loan_detail.as_view(), name="personnelloan"),
-    path("personnelloan/<uuid:uuid>/", views.loan_Personeldetail, name="personnelloan"),
-    path("coustmerloan/<int:id>/", views.loan_Coustmedetail, name="coustmerloan"),
-    path("viewloan/<uuid:uuid>/", views.viewloanAPIView, name="viewloan"),
-    path("viewcoustmer/<uuid:uuid>/", views.viewCoustmerAPIView, name="viewcoustmer"),
+    path(
+        "personnelloan/<uuid:uuid>/", 
+        views.loan_Personeldetail, 
+        name="personnelloan"
+    ),
+    path(
+        "coustmerloan/<int:id>/", 
+        views.loan_Coustmedetail, 
+        name="coustmerloan"
+    ),
+    path(
+        "viewloan/<uuid:uuid>/", 
+        views.viewloanAPIView, 
+        name="viewloan"
+    ),
+    path(
+        "viewcoustmer/<uuid:uuid>/", 
+        views.viewCoustmerAPIView, 
+        name="viewcoustmer"
+    ),
 ]

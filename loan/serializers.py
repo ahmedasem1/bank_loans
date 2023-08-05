@@ -9,7 +9,6 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-
 # Serializer to Register User
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.EmailField(
@@ -154,4 +153,3 @@ class loansCoustmerSerializer(serializers.ModelSerializer):
             return obj.status == "Pending"
         else:
             return obj.status == "viewed"
-
