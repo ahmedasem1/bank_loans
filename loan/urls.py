@@ -5,12 +5,20 @@ from . import views
 
 urlpatterns = [
     path(
-        "api/token/", jwt_views.TokenObtainPairView.as_view(), name="token_obtain_pair"
+        "api/token/", 
+        jwt_views.TokenObtainPairView.as_view(), 
+        name="token_obtain_pair"
     ),
     path(
-        "api/token/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"
+        "api/token/refresh/", 
+        jwt_views.TokenRefreshView.as_view(), 
+        name="token_refresh"
     ),
-    path("signup", views.RegisterUserAPIView.as_view(), name="signup"),
+    path(
+        "signup", 
+        views.RegisterUserAPIView.as_view(), 
+        name="signup"
+    ),
     path(
         "registerprovider/<uuid:uuid>/",
         views.RegisterProviderAPIView.as_view(),
