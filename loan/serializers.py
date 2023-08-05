@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from loan.models import Provider, Bank_personnel, Customer, Loan, User
+from loan.models import Provider, Bank_personnel, Customer, Loan, User,Payment
 from rest_framework import status
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
@@ -138,7 +138,6 @@ class loansSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
 class loansCoustmerSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
 
@@ -153,3 +152,20 @@ class loansCoustmerSerializer(serializers.ModelSerializer):
             return obj.status == "Pending"
         else:
             return obj.status == "viewed"
+
+class Paymentserializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = "__all__"
+
+        # create a Provider object
+
+        def create(self, validated_data):
+            bank_personnel = Bank_personnel.objects.create(
+            loan= self.context["id"],
+            amount=validated_data["amount"],
+            date=validated_data["date"],
+            )
+            bank_personnel.save()
+
+            return bank_personnel

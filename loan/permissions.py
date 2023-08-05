@@ -2,31 +2,26 @@ from rest_framework import permissions
 from .models import User
 
 
-# class IsPersonnelOrReadOnly(permissions.BasePermission):
-#     def has_permission(self, request, view)``:
-#         if User.type=="BP":
-#             return super().has_permission(request, view)
-#         else:
-class IsPersonnelOrReadOnly(permissions.BasePermission):
+class IsPersonnel(permissions.BasePermission):
     """
-    Allows access only to Managers
+    Allows access only to Provider
     """
 
     def has_permission(self, request, view):
         return request.user.profession == "BP"
 
+class IsCustomer(permissions.BasePermission):
+    """
+    Allows access only to Provider
+    """
 
-# class IsPersonnelOrReadOnly(permissions.BasePermission):
-#     """
-#     Object-level permission to only allow owners of an object to edit it.
-#     Assumes the model instance has an `owner` attribute.
-#     """
+    def has_permission(self, request, view):
+        return request.user.profession == "CT"
 
-#     def has_object_permission(self, request, view, obj):
-#         # Read permissions are allowed to any request,
-#         # so we'll always allow GET, HEAD or OPTIONS requests.
-#         if request.method in permissions.SAFE_METHODS:
-#             return True
+class IsProvider(permissions.BasePermission):
+    """
+    Allows access only to Provider
+    """
 
-#         # Instance must have an attribute named `owner`.
-#         return User.type=="BP"
+    def has_permission(self, request, view):
+        return request.user.profession == "PR"

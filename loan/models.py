@@ -60,7 +60,6 @@ class Provider(models.Model):
 
 
 class Loan(models.Model):
-    start_date = models.DateField(null=True, blank=True)
     total_amount = models.IntegerField(null=True, blank=True)
     duration = models.IntegerField(null=True, blank=True)
     min_amount = models.IntegerField()
@@ -77,7 +76,11 @@ class Loan(models.Model):
 
     @property
     def interst_rate(self):
-        return (float(self.total_amount) * self.interest_rate) * self.duration
+        x=0
+
+        x=self.total_amount * self.interest_rate
+        x=x* self.duration
+        return x
 
     def clean(self):
         if self.max_amount < self.min_amount:
@@ -109,7 +112,17 @@ class Loan(models.Model):
         super().save(*args, **kwargs)
 
 
-class payment(models.Model):
+class Payment(models.Model):
     amount = models.IntegerField()
     date = models.DateField()
-    loan = models.ForeignKey(Loan, on_delete=models.CASCADE, null=True)
+    loan = models.ForeignKey(Loan, on_delete=models.CASCADE, null=True,blank=True)
+
+    @property
+    def clean(self):
+        for e in self.loan_set.payment.all():
+            if e.total_amount is not None:
+                x = x + e.total_amount
+        if x > self.loan.total_budget:
+            raise ValidationError(
+                "total of max_amount of loans fields bigger than total_budget of the provider"
+            )        

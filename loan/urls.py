@@ -54,4 +54,9 @@ urlpatterns = [
         views.viewCoustmerAPIView, 
         name="viewcoustmer"
     ),
+    path(
+        "payment/<int:id>/", 
+        views.PaymentApi, 
+        name="payment"
+    ),
 ]

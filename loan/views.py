@@ -9,9 +9,10 @@ from .serializers import (
     LoanDetail,
     loansSerializer,
     loansCoustmerSerializer,
+    Paymentserializer
 )
 from loan.models import User, Loan, Bank_personnel, Provider, Customer
-from loan.permissions import IsPersonnelOrReadOnly
+from loan.permissions import IsPersonnel
 
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import generics
@@ -167,3 +168,18 @@ def loan_Coustmedetail(request, id):
     if request.method == "GET":
         serializer = loansSerializer(loans)
         return Response(serializer.data)
+
+
+@api_view(["POST"])
+def PaymentApi(request, id):
+    """
+    Post a Payment
+    """
+    loans = Loan.objects.get(id=id)
+
+    if request.method == "POST":
+        serializer = Paymentserializer(loans,data=request.data, context={"id": id})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
