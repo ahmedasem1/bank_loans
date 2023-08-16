@@ -61,12 +61,15 @@ class Provider(models.Model):
 
 class Loan(models.Model):
     total_amount = models.IntegerField(null=True, blank=True)
+    # total_money = models.IntegerField(null=True, blank=True)
     duration = models.IntegerField(null=True, blank=True)
     min_amount = models.IntegerField()
     max_amount = models.IntegerField()
     max_duration = models.IntegerField()
     interest_rate = models.IntegerField()
     status = models.CharField(max_length=100, null=True, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    DisplayFields =['total_amount','duration','min_amount','max_amount','max_duration','interest_rate','status','start_date']
 
     coustmer = models.ForeignKey(
         Customer, on_delete=models.CASCADE, null=True, blank=True
@@ -75,12 +78,13 @@ class Loan(models.Model):
     bank_personnel = models.ForeignKey(Bank_personnel, on_delete=models.CASCADE)
 
     @property
-    def interst_rate(self):
-        x=0
+    def total_money(self):
+        if self.total_amount is not None:
+            total_money = 0
 
-        x=self.total_amount * self.interest_rate
-        x=x* self.duration
-        return x
+            total_money = self.total_amount * self.interest_rate
+            total_money= total_money * self.duration
+            return total_money
 
     def clean(self):
         if self.max_amount < self.min_amount:
@@ -102,10 +106,10 @@ class Loan(models.Model):
             )
         if self.duration is not None:
             if self.max_duration < self.duration:
-                raise ValidationError("min_amount fields bigger than max_amount")
+                raise ValidationError("duration field bigger than max_duration")
         if self.total_amount is not None:
             if self.total_amount < self.min_amount:
-                raise ValidationError("min_amount fields bigger than max_amount")
+                raise ValidationError("min_amount fields bigger than total_amount")
 
     def save(self, *args, **kwargs):
         self.full_clean()
@@ -115,7 +119,7 @@ class Loan(models.Model):
 class Payment(models.Model):
     amount = models.IntegerField()
     date = models.DateField()
-    loan = models.ForeignKey(Loan, on_delete=models.CASCADE, null=True,blank=True)
+    loan = models.ForeignKey(Loan, on_delete=models.CASCADE, null=True, blank=True)
 
     @property
     def clean(self):
@@ -125,4 +129,4 @@ class Payment(models.Model):
         if x > self.loan.total_budget:
             raise ValidationError(
                 "total of max_amount of loans fields bigger than total_budget of the provider"
-            )        
+            )

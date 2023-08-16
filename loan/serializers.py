@@ -1,10 +1,15 @@
 from rest_framework import serializers
-from loan.models import Provider, Bank_personnel, Customer, Loan, User,Payment
+from loan.models import Provider, Bank_personnel, Customer, Loan, User, Payment
 from rest_framework import status
 from rest_framework.validators import UniqueValidator
 from django.contrib.auth.password_validation import validate_password
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate
+from rest_framework.fields import CurrentUserDefault
+
+
+from rest_framework import serializers
 
 User = get_user_model()
 
@@ -41,6 +46,48 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class LoginSerializer(serializers.Serializer):
+    """
+    This serializer defines two fields for authentication:
+      * username
+      * password.
+    It will try to authenticate the user with when validated.
+    """
+
+    username = serializers.CharField(label="Username", write_only=True)
+    password = serializers.CharField(
+        label="Password",
+        # This will be used when the DRF browsable API is enabled
+        style={"input_type": "password"},
+        trim_whitespace=False,
+        write_only=True,
+    )
+
+    def validate(self, attrs):
+        # Take username and password from request
+        username = attrs.get("username")
+        password = attrs.get("password")
+
+        if username and password:
+            # Try to authenticate the user using Django auth framework.
+            user = authenticate(
+                request=self.context.get("request"),
+                username=username,
+                password=password,
+            )
+            if not user:
+                # If we don't have a regular user, raise a ValidationError
+                msg = "Access denied: wrong username or password."
+                raise serializers.ValidationError(msg, code="authorization")
+        else:
+            msg = 'Both "username" and "password" are required.'
+            raise serializers.ValidationError(msg, code="authorization")
+        # We have a valid user, put it in the serializer's validated_data.
+        # It will be used in the view.
+        attrs["user"] = user
+        return attrs
+
+
 class RegisterProvider(serializers.ModelSerializer):
     class Meta:
         model = Provider
@@ -50,7 +97,6 @@ class RegisterProvider(serializers.ModelSerializer):
 
         def create(self, validated_data):
             provider = Provider.objects.create(
-                user=validated_data["user"],
                 email=validated_data["email"],
                 bank_personnel=validated_data["bank_personnel"],
                 total_budget=validated_data["total_budget"],
@@ -68,22 +114,23 @@ class RegisterPersonnel(serializers.ModelSerializer):
         # create a Provider object
 
         def create(self, validated_data):
-            bank_personnel = Bank_personnel.objects.create(
-                user=validated_data["user"], type=validated_data["name"]
-            )
+            bank_personnel = Bank_personnel.objects.create(type=validated_data["name"])
             bank_personnel.save()
 
             return bank_personnel
 
 
 class RegisterCustomer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(
+        read_only=True, default=serializers.CurrentUserDefault()
+    )
+
     class Meta:
         model = Customer
         fields = ("user", "name", "id", "age", "job")
 
         def create(self, validated_data):
             customer = Customer.objects.create(
-                user=validated_data["user"],
                 name=validated_data["name"],
                 id=validated_data["id"],
                 age=validated_data["age"],
@@ -138,13 +185,21 @@ class loansSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class loansCoustmerSerializer(serializers.ModelSerializer):
-    status = serializers.SerializerMethodField()
+    # total_fees = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Loan
         fields = "__all__"
 
+    def get_my_discount(self, obj):
+        if not hasattr(obj, "id"):
+            return None
+        if not isinstance(obj, Loan):
+            return None
+        return obj.interst_rate()
+    
     def get_status(self, obj):
         max_amount = self.context.get("max_amount")
 
@@ -152,6 +207,7 @@ class loansCoustmerSerializer(serializers.ModelSerializer):
             return obj.status == "Pending"
         else:
             return obj.status == "viewed"
+
 
 class Paymentserializer(serializers.ModelSerializer):
     class Meta:
@@ -162,9 +218,9 @@ class Paymentserializer(serializers.ModelSerializer):
 
         def create(self, validated_data):
             bank_personnel = Bank_personnel.objects.create(
-            loan= self.context["id"],
-            amount=validated_data["amount"],
-            date=validated_data["date"],
+                loan=self.context["id"],
+                amount=validated_data["amount"],
+                date=validated_data["date"],
             )
             bank_personnel.save()
 

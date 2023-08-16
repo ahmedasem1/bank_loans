@@ -15,27 +15,42 @@ urlpatterns = [
         name="token_refresh"
     ),
     path(
-        "signup", 
+        'token/verify/', 
+        jwt_views.TokenVerifyView.as_view(), 
+        name='token_verify'
+    ),
+    path(
+        'logout', 
+        views.UserLogout.as_view(), 
+        name='logout'
+    ),
+    path(
+        'login', 
+        views.LoginView.as_view(), 
+        name='login'
+    ),
+    path(
+        "signup/", 
         views.RegisterUserAPIView.as_view(), 
         name="signup"
     ),
     path(
-        "registerprovider/<uuid:uuid>/",
+        "registerprovider/",
         views.RegisterProviderAPIView.as_view(),
         name="registerprovider",
     ),
     path(
-        "registercustomer/<uuid:account_uuid>/",
+        "registercustomer/",
         views.RegisterCustomerAPIView.as_view(),
         name="registercustomer",
     ),
     path(
-        "registerpersonnel/<uuid:acc_uuid>/",
+        "registerpersonnel/",
         views.RegisterPersonnelAPIView.as_view(),
         name="registerpersonnel",
     ),
     path(
-        "personnelloan/<uuid:uuid>/", 
+        "personnelloan", 
         views.loan_Personeldetail, 
         name="personnelloan"
     ),
@@ -45,12 +60,12 @@ urlpatterns = [
         name="coustmerloan"
     ),
     path(
-        "viewloan/<uuid:uuid>/", 
+        "viewloan", 
         views.viewloanAPIView, 
         name="viewloan"
     ),
     path(
-        "viewcoustmer/<uuid:uuid>/", 
+        "viewcoustmer", 
         views.viewCoustmerAPIView, 
         name="viewcoustmer"
     ),

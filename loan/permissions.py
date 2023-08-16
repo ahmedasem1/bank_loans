@@ -8,7 +8,8 @@ class IsPersonnel(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user.profession == "BP"
+        return request.user.type == "BP"
+
 
 class IsCustomer(permissions.BasePermission):
     """
@@ -16,7 +17,8 @@ class IsCustomer(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user.profession == "CT"
+        return request.user.type == "CT"
+
 
 class IsProvider(permissions.BasePermission):
     """
@@ -24,4 +26,4 @@ class IsProvider(permissions.BasePermission):
     """
 
     def has_permission(self, request, view):
-        return request.user.profession == "PR"
+        return request.user.type == "PR"
