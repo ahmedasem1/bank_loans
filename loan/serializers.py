@@ -14,7 +14,7 @@ from rest_framework import serializers
 User = get_user_model()
 
 
-# Serializer to Register User
+
 class RegisterSerializer(serializers.ModelSerializer):
     username = serializers.EmailField(
         required=True, validators=[UniqueValidator(queryset=User.objects.all())]
@@ -94,7 +94,6 @@ class RegisterProvider(serializers.ModelSerializer):
         fields = ("user", "name", "total_budget", "bank_personnel")
 
         # create a Provider object
-
         def create(self, validated_data):
             provider = Provider.objects.create(
                 email=validated_data["email"],
@@ -111,7 +110,7 @@ class RegisterPersonnel(serializers.ModelSerializer):
         model = Bank_personnel
         fields = ("user", "name")
 
-        # create a Provider object
+        # create a Bank_personnel object
 
         def create(self, validated_data):
             bank_personnel = Bank_personnel.objects.create(type=validated_data["name"])
@@ -128,7 +127,8 @@ class RegisterCustomer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = ("user", "name", "id", "age", "job")
-
+        
+        # create a Customer object
         def create(self, validated_data):
             customer = Customer.objects.create(
                 name=validated_data["name"],
@@ -154,6 +154,7 @@ class LoanDetail(serializers.ModelSerializer):
             "coustmer",
         )
 
+        # create a Loan object
         def create(self, validated_data):
             loan = Loan.objects.create(
                 bank_personnel=validated_data["bank_personnel"],
@@ -173,6 +174,7 @@ class loansSerializer(serializers.ModelSerializer):
         model = Loan
         fields = "__all__"
 
+    # update a Loan object
     def update(self, instance, validated_data):
         instance.start_date = validated_data.get("start_date", instance.start_date)
         instance.total_amount = validated_data.get(
@@ -214,7 +216,7 @@ class Paymentserializer(serializers.ModelSerializer):
         model = Payment
         fields = "__all__"
 
-        # create a Provider object
+        # create a Payment object
 
         def create(self, validated_data):
             bank_personnel = Bank_personnel.objects.create(
